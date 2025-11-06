@@ -1,0 +1,77 @@
+includes:
+  - bundles: ./tasks/bundles.yaml
+
+variables:
+  - name: REGISTRY
+    description: "Remote OCI registry for the Core package"
+    default: "ghcr.io/defenseunicorns/packages/private/uds"
+  - name: PACKAGE_NAME
+    default: "core-identity-authorization"
+  - name: PACKAGE_VERSION
+    description: "Version of the Core package"
+    default: "0.55.1"
+  - name: PACKAGE_FLAVOR
+    default: "unicorn"
+  - name: ARCHITECTURE
+    description: "System architecture (amd64 or arm64)"
+    default: ""
+  - name: CONFIG_FILE
+    description: "Path to the zarf config file"
+    default: "zarf-config.toml"
+
+tasks:
+  - name: pull
+    description: "Pull Core package from OCI registry"
+    actions:
+      - description: "Pull Core package from OCI registry"
+        cmd: |
+          echo "Pulling Core package ${PACKAGE_NAME}:${PACKAGE_VERSION}-${PACKAGE_FLAVOR} from ${REGISTRY}"
+
+          ARCH_FLAG=""
+          if [ -n "${ARCHITECTURE}" ]; then
+            ARCH_FLAG="-a ${ARCHITECTURE}"
+            echo "Using specified architecture: ${ARCHITECTURE}"
+          else
+            echo "Using auto-detected architecture"
+          fi
+
+          uds zarf package pull ${ARCH_FLAG} oci://${REGISTRY}/${PACKAGE_NAME}:${PACKAGE_VERSION}-${PACKAGE_FLAVOR}
+        env:
+          - ZARF_LOG_LEVEL=info
+
+  - name: deploy
+    description: "Deploy Core package"
+    actions:
+      - description: "Deploy Core package with defined zarf-config.toml"
+        cmd: |
+          ZARF_CONFIG="$CONFIG_FILE" uds zarf package deploy zarf-package-*-${PACKAGE_VERSION}-${PACKAGE_FLAVOR}.tar.zst \
+            --confirm
+
+  - name: clean
+    description: "Remove local Zarf package files"
+    actions:
+      - description: "Clean up local Zarf package & UDS Bundle tarballs"
+        cmd: |
+          echo "Cleaning up local UDS Zarf packages"
+          rm -f zarf-package-*.tar.zst
+          echo "Package files removed"
+          echo "Cleaning up local UDS Bundles"
+          rm -f uds-bundle-*.tar.zst
+          echo "Bundle files removed"
+
+  # First change the PACKAGE_VERSION in the variables section above to create a different version,
+  # it will result in the uds-bundle.yaml being updated with the new version and ref for core. I 
+  # couldn't get renovate to do this cleanly.
+  - name: create-bundle
+    description: |
+      "Create a single package bundle for Core. This 
+      allows for granular control over helm chart values."
+    actions:
+      - task: bundles:update-bundle-version
+      - task: bundles:create
+
+  - name: echo-admin-password
+    actions:
+      - cmd: |
+          uds zarf tools kubectl get secret keycloak-admin-password -n keycloak \
+            -o jsonpath='{.data.password}' | base64 --decode && echo 

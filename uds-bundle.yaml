@@ -1,0 +1,34 @@
+kind: UDSBundle
+metadata:
+  name: identity-authorization
+  version: 0.55.1
+packages:
+  - name: identity-authorization
+    repository: ghcr.io/defenseunicorns/packages/private/uds/core-identity-authorization
+    ref: 0.55.1-unicorn
+    overrides:
+      keycloak:
+        keycloak:
+          variables:
+            - name: USERNAME_PASSWORD_AUTH_ENABLED
+              path: realmAuthFlows.USERNAME_PASSWORD_AUTH_ENABLED
+            - name: DEVMODE_ENABLED
+              path: devMode
+            - name: FIPS_ENABLED
+              path: fips
+            - name: CPU_LIMIT
+              path: resources.limits.cpu
+            - name: MEMORY_LIMIT
+              path: resources.limits.memory
+            - name: KC_DB_HOST
+              path: postgresql.host
+            - name: KC_DB_NAME
+              path: postgresql.database
+            - name: KC_DB_USERNAME
+              path: postgresql.username
+            - name: KC_DB_PASSWORD
+              path: postgresql.password
+            - name: INSECURE_ADMIN_USER_GENERATION
+              path: insecureAdminPasswordGeneration.enabled
+            - name: ENABLE_REGISTRATION_FIELDS
+              path: themeCustomizations.settings.enableRegistrationFields

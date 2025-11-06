@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "recreateClosed": true,
+
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/\\.ya?ml$/"],
+      "matchStrings": [
+        "- name: PACKAGE_VERSION\\s*\\n\\s*description: \"Version of the Core Base package\"\\s*\\n\\s*default: \"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "defenseunicorns/uds-core",
+      "versioningTemplate": "semver"
+    }
+  ],  
+
+  "packageRules": [
+    {
+      "matchManagers": ["custom.regex"],
+      "matchPackageNames": ["defenseunicorns/uds-core"],
+      "groupName": "Core Identity Authorization Package",
+      "semanticCommitType": "deps",
+      "semanticCommitScope": "core",
+      "commitMessageTopic": "Core Identity Authorization package",
+      "prTitle": "deps(core): update core identity authorization package to {{newVersion}}"
+    }
+  ]
+}
