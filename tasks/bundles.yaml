@@ -19,7 +19,7 @@ tasks:
 
   - name: update-bundle-version
     description: |
-      Updates the metadata.version and packages.name["core"].ref to 
+      Updates the metadata.version and packages.name[<name>].ref to
       use the new version supplied by renovate to the tasks.yaml file. 
     actions:
       - cmd: |
@@ -30,5 +30,5 @@ tasks:
           # update uds-bundle.yaml
           uds zarf tools yq -i '
             .metadata.version = env(VER) |
-            (.packages[] | select(.name=="base") | .ref) = (env(VER) + "-" + env(FLAVOR))
+            (.packages[] | select(.name=="identity-authorization") | .ref) = (env(VER) + "-" + env(FLAVOR))
           ' uds-bundle.yaml
