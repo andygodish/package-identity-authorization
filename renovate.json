@@ -8,7 +8,7 @@
       "customType": "regex",
       "managerFilePatterns": ["/\\.ya?ml$/"],
       "matchStrings": [
-        "- name: PACKAGE_VERSION\\s*\\n\\s*description: \"Version of the Core Base package\"\\s*\\n\\s*default: \"(?<currentValue>[^\"]+)\""
+        "- name: PACKAGE_VERSION\\s*\\n\\s*description: \"Version of the Core package\"\\s*\\n\\s*default: \"(?<currentValue>[^\"]+)\""
       ],
       "datasourceTemplate": "github-releases",
       "depNameTemplate": "defenseunicorns/uds-core",
