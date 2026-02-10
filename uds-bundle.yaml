@@ -1,11 +1,19 @@
 kind: UDSBundle
 metadata:
   name: identity-authorization
-  version: 0.58.1
+  version: 0.59.1
 packages:
+  - name: core-secrets
+    path: ./
+    ref: v1
+    exports:
+      - name: KC_DB_PASSWORD
   - name: identity-authorization
     repository: ghcr.io/defenseunicorns/packages/private/uds/core-identity-authorization
-    ref: 0.58.1-unicorn
+    ref: 0.59.1-unicorn
+    imports:
+      - name: KC_DB_PASSWORD
+        package: core-secrets
     overrides:
       keycloak:
         keycloak:

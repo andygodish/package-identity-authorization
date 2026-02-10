@@ -1,0 +1,17 @@
+kind: ZarfPackageConfig
+metadata:
+  name: core-secrets
+  description: "Export secrets needed for Core service configurations"
+  version: v1
+components: 
+  - name: core-secrets
+    required: true
+    actions:
+      onDeploy: 
+        before: 
+          - cmd: uds zarf tools kubectl get secret -n keycloak keycloak.keycloak.pg-cluster.credentials.postgresql.acid.zalan.do --template={{.data.password}} | base64 -d
+            mute: true
+            setVariables: 
+              - name: KC_DB_PASSWORD
+                sensitive: true
+      
